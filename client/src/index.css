@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #E63946;
+  --color-cream: #FFF8F0;
+  --color-dark: #1A1A1A;
+  --color-accent: #F4A261;
+  --color-success: #2ECC71;
+  --font-sans: 'Poppins', sans-serif;
+}
+
+:root {
+  --primary: #E63946;
+  --cream: #FFF8F0;
+  --dark: #1A1A1A;
+  --accent: #F4A261;
+  --success: #2ECC71;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FFF8F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #E63946;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d62839;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Smooth transitions */
+.transition-all-300 {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  background-color: #FFF8F0;
+  color: #1A1A1A;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Dark Mode overrides */
+.dark body {
+  background-color: #0F0F0F;
+  color: #FFF8F0;
+}
