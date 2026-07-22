@@ -26,14 +26,34 @@ exports.createRazorpayOrder = asyncHandler(async (req, res, next) => {
         status: 'received',
     });
 
-    // 2. Create Razorpay Order
+    // 2. Create Razorpay Order — isolated try-catch so Razorpay errors
+    //    (which carry statusCode:401 for bad credentials) are never sent to the
+    //    client as 401, which the axios interceptor wrongly treats as session expiry.
     const options = {
         amount: Math.round(total * 100), // Razorpay expects amount in paise
         currency: 'INR',
         receipt: order._id.toString(),
     };
 
-    const razorpayOrder = await razorpay.orders.create(options);
+    let razorpayOrder;
+    try {
+        razorpayOrder = await razorpay.orders.create(options);
+    } catch (razorpayError) {
+        // Clean up the orphaned MongoDB order so the DB stays consistent
+        await Order.findByIdAndDelete(order._id);
+
+        // Log the real Razorpay error for debugging
+        console.error('[RAZORPAY] Failed to create order:',
+            razorpayError.statusCode,
+            razorpayError.error?.description || razorpayError.message
+        );
+
+        // Return 502 so the client knows it's a payment gateway issue, not an auth issue
+        return next(new AppError(
+            `Payment gateway error: ${razorpayError.error?.description || 'Unable to contact Razorpay. Check your API credentials.'}`,
+            502
+        ));
+    }
 
     res.json({
         status: 'success',
@@ -41,7 +61,7 @@ exports.createRazorpayOrder = asyncHandler(async (req, res, next) => {
             id: razorpayOrder.id,
             amount: razorpayOrder.amount,
             currency: razorpayOrder.currency,
-            mongoOrderId: order._id, // Send MongoDB order ID back to client
+            mongoOrderId: order._id,
         },
         key: process.env.RAZORPAY_KEY_ID,
     });

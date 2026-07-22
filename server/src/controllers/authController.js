@@ -58,7 +58,8 @@ exports.register = asyncHandler(async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -89,7 +90,8 @@ exports.login = asyncHandler(async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -106,7 +108,11 @@ exports.logout = asyncHandler(async (req, res) => {
         req.user.refreshToken = undefined;
         await req.user.save({ validateBeforeSave: false });
     }
-    res.cookie('refreshToken', '', { httpOnly: true, expires: new Date(0) });
+    res.cookie('refreshToken', '', {
+        httpOnly: true,
+        path: '/',
+        expires: new Date(0),
+    });
     res.json({ status: 'success', message: 'Logged out' });
 });
 
@@ -131,7 +137,8 @@ exports.refreshToken = asyncHandler(async (req, res, next) => {
         res.cookie('refreshToken', newRefreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            path: '/',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 

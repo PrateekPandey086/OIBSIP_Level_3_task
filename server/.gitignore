@@ -41,3 +41,8 @@ public/uploads/
 
 # MongoDB Memory Server
 .mongodb-binaries/
+
+# Debug / test artifacts (do not commit these)
+error_response*.json
+server_*.log
+server_run.log

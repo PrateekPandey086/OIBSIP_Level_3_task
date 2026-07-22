@@ -118,7 +118,12 @@ const Checkout = () => {
             const rzp = new window.Razorpay(options);
             rzp.open();
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Failed to initiate payment');
+            console.error('Payment initiation error:', error.response?.status, error.response?.data);
+            toast.error(
+                error.response?.data?.message ||
+                error.message ||
+                'Failed to initiate payment'
+            );
         } finally {
             setLoading(false);
         }
